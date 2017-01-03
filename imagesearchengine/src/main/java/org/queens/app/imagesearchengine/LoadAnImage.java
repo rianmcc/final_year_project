@@ -78,7 +78,7 @@ public class LoadAnImage extends Application {
 				if (file != null) {
 					imgView.setImage(new Image(file.toURI().toString()));
 					try {
-						queryImage = ImageIO.read(file);
+						queryImage =  ImageIO.read(file);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -189,49 +189,20 @@ public class LoadAnImage extends Application {
 
 	public double calculateDistance(BufferedImage query,
 			LibraryImage libraryImage) {
-		Raster queryRas = query.getData();
-		Raster libraryRas = libraryImage.getImageData().getData();
 
-		int[][] queryHist = generateImageHistogram(queryRas);
-		int[][] libraryHist = generateImageHistogram(libraryRas);
+		ColourHistogram queryHist = new ColourHistogram(4);
+		ColourHistogram libraryHist = new ColourHistogram(4);
+		queryHist.getImageHistogram(query);
+		libraryHist.getImageHistogram(libraryImage.getImageData());
 
 		double distance = 0;
 
 		for (int i = 0; i != 3; i++)
 			for (int j = 0; j != 4; j++)
-				distance += Math.pow(queryHist[i][j] - libraryHist[i][j], 2);
+				distance += Math.pow(queryHist.getHistogram()[i][j] - libraryHist.getHistogram()[i][j], 2);
 		distance = Math.sqrt(distance);
 
 		return distance;
-	}
-
-	public int[][] generateImageHistogram(Raster image) {
-		// Multi-dimensional array representing a matrix for
-		// colours in an image of different intensities
-		// x: red, green, blue
-		// y: 0-63, 64-127, 128-191, 192-255
-		int[][] colourHistogram = new int[3][4];
-		int[] pixelValues = new int[3];
-		int index = 0;
-
-		for (int x = 0; x != image.getWidth(); x++) {
-			for (int y = 0; y != image.getHeight(); y++) {
-				pixelValues = image.getPixel(x, y, pixelValues);
-				index = 0;
-				for (int i : pixelValues) {
-					if (i >= 192)
-						colourHistogram[index][3]++;
-					else if (i >= 128)
-						colourHistogram[index][2]++;
-					else if (i >= 64)
-						colourHistogram[index][1]++;
-					else
-						colourHistogram[index][0]++;
-					index++;
-				}
-			}
-		}
-		return colourHistogram;
 	}
 
 }
