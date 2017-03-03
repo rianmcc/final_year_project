@@ -32,27 +32,20 @@ public class ColourHistogram {
 
 	public int[][] generateImageHistogram(BufferedImage image) {
 		Raster imageRaster = image.getData();
+		int numOfBins = 32;
 		// Multi-dimensional array representing a matrix for
 		// colours in an image of different intensities
-		// x: red, green, blue
-		// y: 0-63, 64-127, 128-191, 192-255
-		int[][] colourHistogram = new int[3][4];
+		int[][] colourHistogram = new int[3][numOfBins];
 		int[] pixelValues = new int[3];
 		int index = 0;
+		int binSize = 256 / numOfBins;
 
 		for (int x = 0; x != imageRaster.getWidth(); x++) {
 			for (int y = 0; y != imageRaster.getHeight(); y++) {
 				pixelValues = imageRaster.getPixel(x, y, pixelValues);
 				index = 0;
 				for (int i : pixelValues) {
-					if (i >= 192)
-						colourHistogram[index][3]++;
-					else if (i >= 128)
-						colourHistogram[index][2]++;
-					else if (i >= 64)
-						colourHistogram[index][1]++;
-					else
-						colourHistogram[index][0]++;
+					colourHistogram[index][i/binSize]++;
 					index++;
 				}
 			}
