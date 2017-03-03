@@ -23,11 +23,7 @@ public class ColourHistogram {
 	}
 
 	public void getImageHistogram(BufferedImage image) {
-		try {
-			histogram = checkOrUpdateCache(image);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		histogram = generateImageHistogram(image);
 	}
 
 	public int[][] generateImageHistogram(BufferedImage image) {
@@ -45,7 +41,7 @@ public class ColourHistogram {
 				pixelValues = imageRaster.getPixel(x, y, pixelValues);
 				index = 0;
 				for (int i : pixelValues) {
-					colourHistogram[index][i/binSize]++;
+					colourHistogram[index][i / binSize]++;
 					index++;
 				}
 			}
@@ -64,11 +60,11 @@ public class ColourHistogram {
 		pstmt = conn.prepareStatement(selectQuery);
 		pstmt.setString(1, hash);
 		ResultSet rs = pstmt.executeQuery();
-		
+
 		if (!rs.next()) {
 			int[][] histogram = generateImageHistogram(image);
-			
-			String sql = "insert into hist_cache values(?,?)";	
+
+			String sql = "insert into hist_cache values(?,?)";
 			try {
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, hash);
@@ -80,7 +76,7 @@ public class ColourHistogram {
 				pstmt.close();
 				DbConnection.closeConnection(conn);
 			}
-			
+
 			return histogram;
 		} else {
 			try {

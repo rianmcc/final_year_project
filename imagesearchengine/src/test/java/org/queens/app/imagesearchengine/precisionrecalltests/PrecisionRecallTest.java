@@ -111,10 +111,10 @@ public class PrecisionRecallTest {
 			// Divide by number of queries to get average precision and recall
 			for (int i = 0; i != numReturns.length; i++) {
 				precisionAverages[i] = precisionAverages[i] / numOfQueryImages;
-				fileWriter.append(Double.toString(precisionAverages[i]));
 				recallAverages[i] = recallAverages[i] / numOfQueryImages;
-				fileWriter.append(",");
 				fileWriter.append(Double.toString(recallAverages[i]));
+				fileWriter.append(",");
+				fileWriter.append(Double.toString(precisionAverages[i]));
 				fileWriter.append("\n");
 			}
 			fileWriter.flush();
