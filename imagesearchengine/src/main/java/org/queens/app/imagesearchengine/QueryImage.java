@@ -6,14 +6,13 @@ import org.queens.app.imagesearchengine.colourhistogram.ColourHistogram;
 import org.queens.app.imagesearchengine.cooccurrencematrix.CooccurrenceMatrix;
 import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
 
-public class LibraryImage implements Comparable<LibraryImage> {
+public class QueryImage {
 	private BufferedImage imageData;
-	private double distance;
 	private ColourHistogram colourHistogram;
 	private EdgeHistogram edgeHistogram;
 	private CooccurrenceMatrix cooccurrenceMatrix;
 	
-	public LibraryImage(BufferedImage imageData) {
+	public QueryImage(BufferedImage imageData) {
 		this.imageData = imageData;
 	}
 
@@ -23,14 +22,6 @@ public class LibraryImage implements Comparable<LibraryImage> {
 
 	public void setImageData(BufferedImage imageData) {
 		this.imageData = imageData;
-	}
-
-	public double getDistance() {
-		return distance;
-	}
-
-	public void setDistance(double distance) {
-		this.distance = distance;
 	}
 
 	public ColourHistogram getColourHistogram() {
@@ -56,14 +47,4 @@ public class LibraryImage implements Comparable<LibraryImage> {
 	public void setCooccurrenceMatrix(CooccurrenceMatrix cooccurrenceMatrix) {
 		this.cooccurrenceMatrix = cooccurrenceMatrix;
 	}
-
-	@Override
-	public int compareTo(LibraryImage o) {
-		double compareDistance = ((LibraryImage)o).getDistance();
-		
-		return Double.compare(distance, compareDistance);
-	}
-	
-	
-
 }

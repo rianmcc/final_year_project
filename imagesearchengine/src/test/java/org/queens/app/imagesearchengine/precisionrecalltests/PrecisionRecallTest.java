@@ -1,6 +1,5 @@
 package org.queens.app.imagesearchengine.precisionrecalltests;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,8 +14,8 @@ import java.util.logging.SimpleFormatter;
 import javax.imageio.ImageIO;
 
 import org.junit.Test;
-
 import org.queens.app.imagesearchengine.LoadAnImage;
+import org.queens.app.imagesearchengine.QueryImage;
 import org.queens.app.imagesearchengine.precisionrecalltests.EnumCategory.Category;
 
 public class PrecisionRecallTest {
@@ -47,9 +46,10 @@ public class PrecisionRecallTest {
 		int numOfQueryImages = query_images.length;
 		
 		int numOfRelevantImages = 48;
-		int[] numReturns = new int[192];
-		for (int i = 0; i != 192; i++)
-			numReturns[i] = i+1;
+		int[] numReturns = new int[48];
+		for (int i = 0; i < 48; i++) {
+			numReturns[i] = (i+1)*4;
+		}
 
 		int relevantImagesReturned;
 		double precision;
@@ -63,9 +63,9 @@ public class PrecisionRecallTest {
 					.getName());
 			LOGGER.finer("File category is: " + queryCategory);
 
-			BufferedImage queryImage = null;
+			QueryImage queryImage = null;
 			try {
-				queryImage = ImageIO.read(queryImageFile);
+				queryImage = new QueryImage(ImageIO.read(queryImageFile));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
