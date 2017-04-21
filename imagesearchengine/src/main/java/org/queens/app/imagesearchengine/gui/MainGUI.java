@@ -2,6 +2,7 @@ package org.queens.app.imagesearchengine.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -18,18 +19,26 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -58,14 +67,8 @@ public class MainGUI extends Application {
 		grid.add(loadImageBtn, 0, 1);
 		Button startButton = new Button("Run Algorithm");
 		grid.add(startButton, 1, 1);
-
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		ChoiceBox choiceBox = new ChoiceBox(FXCollections.observableArrayList(
-				5, 192));
-		choiceBox.getSelectionModel().selectFirst();
-		grid.add(choiceBox, 3, 1);
 		
-		Scene scene = new Scene(grid, 500, 350);
+		Scene scene = new Scene(grid, 400, 350);
 		stage.setTitle("Load An Image");
 		stage.setScene(scene);
 		stage.show();
@@ -97,41 +100,49 @@ public class MainGUI extends Application {
 					System.out.println("No query selected");
 				} else {
 					retriever.submitQuery(selectedQueryImage);
-
-					TableView<LibraryImage> table = new TableView<LibraryImage>();
-					table.setEditable(false);
-
-					TableColumn<LibraryImage, ImageView> imageColumn = new TableColumn<>(
-							"Image");
-					TableColumn<LibraryImage, Double> distanceColumn = new TableColumn<>(
-							"Distance");
-
-					final ObservableList<LibraryImage> data = FXCollections
-							.observableArrayList();
-					for (int i = 0; i != (int) choiceBox.getSelectionModel()
-							.getSelectedItem(); i++) {
-						data.add(retriever.getLibrary().get(i));
+					
+					ArrayList<Image> libraryImages = new ArrayList<Image>();
+					for (int i = 0; i != retriever.getLibrary().size(); i++) {
+						libraryImages.add(SwingFXUtils.toFXImage(retriever.getLibrary().get(i).getImageData(), null));
 					}
+					
+					GridPane imageGrid = new GridPane();
+					imageGrid.setHgap(5);
+					imageGrid.setVgap(0);
+					int imageCol = 0;
+					int imageRow = 0;
+					Label distance;
+					// stackoverflow.com/questions/25374578/adding-images-to-a-gridpane-javafx
+					for (int i = 0; i != libraryImages.size(); i++) {
+						ImageView picture = new ImageView(libraryImages.get(i));
+						picture.setFitHeight(156);
+						picture.setFitWidth(156);
+						
+						distance = new Label(String.format("Distance: %.5f",retriever.getLibrary().get(i).getDistance()));
+						GridPane.setHalignment(distance, HPos.CENTER);
+						
+						imageGrid.add(picture, imageCol, imageRow);
+						imageGrid.add(distance, imageCol, imageRow+1);
+					    imageCol++;
 
-					imageColumn
-							.setCellValueFactory(c -> new SimpleObjectProperty<ImageView>(
-									new ImageView(SwingFXUtils.toFXImage(c
-											.getValue().getImageData(), null))));
-					distanceColumn
-							.setCellValueFactory(new PropertyValueFactory<LibraryImage, Double>(
-									"Distance"));
+					    if(imageCol > 5){
+					      // Reset Column
+					      imageCol=0;
+					      // Next Row
+					      imageRow += 2;
+					    }
+					}
+					
+					ScrollPane sp = new ScrollPane();
+					sp.setContent(imageGrid);
+					sp.setPadding(new Insets(5, 0, 0, 5));
+					
+					VBox ab = new VBox(10);
+					ab.getChildren().addAll(sp);
 
-					table.setItems(data);
-
-					table.getColumns().add(imageColumn);
-					table.getColumns().add(distanceColumn);
-
-					VBox vbox = new VBox();
-					vbox.getChildren().add(table);
-					VBox.setVgrow(table, Priority.ALWAYS);
 
 					Stage results = new Stage();
-					Scene scene2 = new Scene(vbox, 1000, 700);
+					Scene scene2 = new Scene(ab, 1000, 700);
 					results.setTitle("Results");
 					results.setScene(scene2);
 					results.show();
@@ -150,13 +161,13 @@ public class MainGUI extends Application {
     	retriever = new Retriever(new File("testdata/library"));
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.10));
         
-    	retriever.indexEdgeHistograms();
+    	//retriever.indexEdgeHistograms();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.25));
-        retriever.indexColourCorrelograms();
+      //  retriever.indexColourCorrelograms();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.5));
         retriever.indexColourHistograms();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.75));
-        retriever.indexCooccurrenceMatrices();
+       // retriever.indexCooccurrenceMatrices();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(1));
         
         

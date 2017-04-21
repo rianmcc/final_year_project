@@ -55,21 +55,21 @@ public class Retriever {
 
 		for (LibraryImage img : library) {
 			img.setColorDistance(getColorDistance(selectedQueryImage, img));
-			img.setShapeDistance(getShapeDistance(selectedQueryImage, img));
-			img.setTextureVectorDistances(getTextureDistance(
-					selectedQueryImage, img));
-			img.setColourCorrelogramDistance(getCorrelogramDistance(
-					selectedQueryImage, img));
+//			img.setShapeDistance(getShapeDistance(selectedQueryImage, img));
+//			img.setTextureVectorDistances(getTextureDistance(
+//					selectedQueryImage, img));
+//			img.setColourCorrelogramDistance(getCorrelogramDistance(
+//					selectedQueryImage, img));
 		}
 
 		ColourHistogram.normaliseLibraryDistances(library);
-		EdgeHistogram.normaliseLibraryDistances(library);
-		CooccurrenceMatrix.normaliseLibraryDistances(library);
-		ColourAutoCorrelogram.normaliseLibraryDistances(library);
+//		EdgeHistogram.normaliseLibraryDistances(library);
+//		CooccurrenceMatrix.normaliseLibraryDistances(library);
+//		ColourAutoCorrelogram.normaliseLibraryDistances(library);
 
 		double finalDistance;
 		for (LibraryImage img : library) {
-			finalDistance = (img.getColourCorrelogramDistance()) / 1;
+			finalDistance = (img.getColorDistance()) / 1;
 			img.setDistance(finalDistance);
 		}
 
