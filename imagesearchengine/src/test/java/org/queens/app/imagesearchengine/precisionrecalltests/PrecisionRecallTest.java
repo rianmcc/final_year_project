@@ -3,9 +3,6 @@ package org.queens.app.imagesearchengine.precisionrecalltests;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,9 +11,10 @@ import java.util.logging.SimpleFormatter;
 import javax.imageio.ImageIO;
 
 import org.junit.Test;
-import org.queens.app.imagesearchengine.LoadAnImage;
+import org.queens.app.imagesearchengine.EnumCategory;
+import org.queens.app.imagesearchengine.EnumCategory.Category;
+import org.queens.app.imagesearchengine.Main;
 import org.queens.app.imagesearchengine.QueryImage;
-import org.queens.app.imagesearchengine.precisionrecalltests.EnumCategory.Category;
 
 public class PrecisionRecallTest {
 
@@ -33,14 +31,12 @@ public class PrecisionRecallTest {
 		}
 		fh.setFormatter(new SimpleFormatter());
 		LOGGER.addHandler(fh);
-		LOGGER.setLevel(Level.FINE);
+		LOGGER.setLevel(Level.OFF);
 
 		File testdataDirectory = new File("testdata/query_images");
 		File[] query_images = testdataDirectory.listFiles();
 
-		LoadAnImage tester = new LoadAnImage();
-		List<LibraryImageTester> library = loadLibrary(new File(
-				"testdata/library"));
+		Main tester = new Main();
 		Category queryCategory = null;
 
 		int numOfQueryImages = query_images.length;
@@ -69,27 +65,23 @@ public class PrecisionRecallTest {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			for (LibraryImageTester img : library) {
-				img.setDistance(tester.calculateDistance(queryImage, img));
-			}
-
-			Collections.sort(library);
+			
+			tester.submitQuery(queryImage);
 
 			int returnIndex = 0;
 			for (int returnNumber : numReturns) {
 				LOGGER.fine("Precision/Recall for " + returnNumber + " returns");
 				relevantImagesReturned = 0;
 				for (int i = 0; i != returnNumber; i++) {
-					if (library.get(i).getCategory() == queryCategory) {
+					if (tester.getLibrary().get(i).getCategory() == queryCategory) {
 						LOGGER.finer("Position: " + i + ". Category: "
-								+ library.get(i).getCategory() + ". Distance: "
-								+ library.get(i).getDistance() + ". Matches!");
+								+ tester.getLibrary().get(i).getCategory() + ". Distance: "
+								+ tester.getLibrary().get(i).getDistance() + ". Matches!");
 						relevantImagesReturned++;
 					} else {
 						LOGGER.finer("Position: " + i + ". Category: "
-								+ library.get(i).getCategory() + ". Distance: "
-								+ library.get(i).getDistance()
+								+ tester.getLibrary().get(i).getCategory() + ". Distance: "
+								+ tester.getLibrary().get(i).getDistance()
 								+ ". Doesn't Match!");
 					}
 				}
@@ -123,24 +115,6 @@ public class PrecisionRecallTest {
 			e.printStackTrace();
 		}
 
-	}
-
-	public List<LibraryImageTester> loadLibrary(File libraryDirectory) {
-		List<LibraryImageTester> library = new ArrayList<LibraryImageTester>();
-
-		File[] listing = libraryDirectory.listFiles();
-		if (listing != null) {
-			for (File file : listing) {
-				try {
-					library.add(new LibraryImageTester(ImageIO.read(file), file
-							.getName()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return library;
 	}
 
 	private double calculatePrecision(int relevantImagesReturned,

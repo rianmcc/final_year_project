@@ -2,8 +2,10 @@ package org.queens.app.imagesearchengine.edgehistogram;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
+import org.queens.app.imagesearchengine.LibraryImage;
 import org.queens.app.imagesearchengine.utils.ImageUtils;
 
 public class EdgeHistogram extends Feature {
@@ -224,6 +226,26 @@ public class EdgeHistogram extends Feature {
 		
 		edgeDistance = localEdgeDistance;// + (5d*globalEdgeDistance);
 		return edgeDistance;
+	}
+	
+	public static void normaliseLibraryDistances(List<LibraryImage> library) {
+		double max, min, dist;
+
+		max = library.get(0).getShapeDistance();
+		min = library.get(0).getShapeDistance();
+		dist = 0;
+		for (int i = 1; i != library.size(); i++) {
+			dist = library.get(i).getShapeDistance();
+			if (dist > max) {
+				max = dist;
+			}
+			if (dist < min) {
+				min = dist;
+			}
+		}
+		for (LibraryImage img : library) {
+			img.setShapeDistance((img.getShapeDistance() - min)/(max - min));
+		}
 	}
 
 }

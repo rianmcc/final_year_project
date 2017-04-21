@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.queens.app.imagesearchengine.colourautocorrelogram.ColourAutoCorrelogram;
 import org.queens.app.imagesearchengine.colourhistogram.ColourHistogram;
 import org.queens.app.imagesearchengine.cooccurrencematrix.CooccurrenceMatrix;
 import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
@@ -34,15 +35,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class LoadAnImage extends Application {
+public class Main extends Application {
 
 	QueryImage selectedQueryImage;
-	File libraryDirectory;
+	File libraryDirectory = new File("testdata/library");
 	List<LibraryImage> library;
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		libraryDirectory = new File("testdata/library");
 
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -92,14 +92,8 @@ public class LoadAnImage extends Application {
 
 			@Override
 			public void handle(ActionEvent event) {
-				if (library == null) {
-					library = loadLibrary(libraryDirectory);
-				}
-				for (LibraryImage img : library) {
-					img.setDistance(calculateDistance(selectedQueryImage, img));
-				}
 
-				Collections.sort(library);
+				submitQuery(selectedQueryImage);
 
 				TableView<LibraryImage> table = new TableView<LibraryImage>();
 				table.setEditable(false);
@@ -151,14 +145,15 @@ public class LoadAnImage extends Application {
 		launch(args);
 	}
 
-	public List<LibraryImage> loadLibrary(File libraryDirectory) {
+	public List<LibraryImage> loadLibrary() {
 		List<LibraryImage> library = new ArrayList<LibraryImage>();
 
 		File[] listing = libraryDirectory.listFiles();
 		if (listing != null) {
 			for (File file : listing) {
 				try {
-					library.add(new LibraryImage(ImageIO.read(file)));
+					library.add(new LibraryImage(ImageIO.read(file), file
+							.getName()));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -168,11 +163,8 @@ public class LoadAnImage extends Application {
 		return library;
 	}
 
-	public double calculateDistance(QueryImage queryImage,
+	public double getColorDistance(QueryImage queryImage,
 			LibraryImage libraryImage) {
-
-		double final_distance = 0;
-
 		if (queryImage.getColourHistogram() == null) {
 			queryImage.setColourHistogram(new ColourHistogram(queryImage
 					.getImageData()));
@@ -188,6 +180,11 @@ public class LoadAnImage extends Application {
 				queryImage.getColourHistogram(),
 				libraryImage.getColourHistogram());
 
+		return colourHistogramDistance;
+	}
+
+	public double getShapeDistance(QueryImage queryImage,
+			LibraryImage libraryImage) {
 		if (queryImage.getEdgeHistogram() == null) {
 			queryImage.setEdgeHistogram(new EdgeHistogram(queryImage
 					.getImageData()));
@@ -200,28 +197,81 @@ public class LoadAnImage extends Application {
 		}
 
 		double edgeHistogramDistance = EdgeHistogram.calculateDistance(
-				queryImage.getEdgeHistogram(), libraryImage.getEdgeHistogram());		
-		
+				queryImage.getEdgeHistogram(), libraryImage.getEdgeHistogram());
+
+		return edgeHistogramDistance;
+	}
+
+	public double[] getTextureDistance(QueryImage queryImage,
+			LibraryImage libraryImage) {
 		if (queryImage.getCooccurrenceMatrix() == null) {
 			queryImage.setCooccurrenceMatrix(new CooccurrenceMatrix(queryImage
 					.getImageData()));
 			queryImage.getCooccurrenceMatrix().extractFeature();
 		}
 		if (libraryImage.getCooccurrenceMatrix() == null) {
-			libraryImage.setCooccurrenceMatrix(new CooccurrenceMatrix(libraryImage
-					.getImageData()));
+			libraryImage.setCooccurrenceMatrix(new CooccurrenceMatrix(
+					libraryImage.getImageData()));
 			libraryImage.getCooccurrenceMatrix().extractFeature();
 		}
 
-		double cooccurrenceMatrixDistance = CooccurrenceMatrix.calculateDistance(
-				queryImage.getCooccurrenceMatrix(),
-				libraryImage.getCooccurrenceMatrix());
-		
-//		System.out.println("Colour: " + colourHistogramDistance);
-//		System.out.println("Shape: " + edgeHistogramDistance);
-//		System.out.println("Co-occurrence Matrix: " + cooccurrenceMatrixDistance);
+		double[] cooccurrenceMatrixDistance = CooccurrenceMatrix
+				.calculateDistance(queryImage.getCooccurrenceMatrix(),
+						libraryImage.getCooccurrenceMatrix());
 
-		return colourHistogramDistance;
+		return cooccurrenceMatrixDistance;
+	}
+
+	public double getCorrelogramDistance(QueryImage queryImage,
+			LibraryImage libraryImage) {
+		if (queryImage.getColourCorrelogram() == null) {
+			queryImage.setColourCorrelogram(new ColourAutoCorrelogram(queryImage
+					.getImageData()));
+			queryImage.getColourCorrelogram().extractFeature();
+		}
+		if (libraryImage.getColourCorrelogram() == null) {
+			libraryImage.setColourCorrelogram(new ColourAutoCorrelogram(
+					libraryImage.getImageData()));
+			libraryImage.getColourCorrelogram().extractFeature();
+		}
+
+		double colourCorrelogramDistance = ColourAutoCorrelogram.calculateDistance(
+				queryImage.getColourCorrelogram(),
+				libraryImage.getColourCorrelogram());
+
+		return colourCorrelogramDistance;
+	}
+
+	public void submitQuery(QueryImage selectedQueryImage) {
+		if (library == null) {
+			library = loadLibrary();
+		}
+
+		for (LibraryImage img : library) {
+			img.setColorDistance(getColorDistance(selectedQueryImage, img));
+//			img.setShapeDistance(getShapeDistance(selectedQueryImage, img));
+//			img.setTextureVectorDistances(getTextureDistance(
+//					selectedQueryImage, img));
+			img.setColourCorrelogramDistance(getCorrelogramDistance(
+					selectedQueryImage, img));
+		}
+
+		ColourHistogram.normaliseLibraryDistances(library);
+//		EdgeHistogram.normaliseLibraryDistances(library);
+//		CooccurrenceMatrix.normaliseLibraryDistances(library);
+		ColourAutoCorrelogram.normaliseLibraryDistances(library);
+
+		double finalDistance;
+		for (LibraryImage img : library) {
+			finalDistance = (img.getColourCorrelogramDistance()) / 1;
+			img.setDistance(finalDistance);
+		}
+
+		Collections.sort(library);
+	}
+
+	public List<LibraryImage> getLibrary() {
+		return library;
 	}
 
 }

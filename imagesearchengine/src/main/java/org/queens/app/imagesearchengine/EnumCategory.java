@@ -1,4 +1,4 @@
-package org.queens.app.imagesearchengine.precisionrecalltests;
+package org.queens.app.imagesearchengine;
 
 /**
  * An {@link Enum} class for holding and assigning categories to images for precision

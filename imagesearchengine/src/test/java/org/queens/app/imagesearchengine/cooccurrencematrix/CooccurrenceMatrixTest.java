@@ -42,36 +42,36 @@ public class CooccurrenceMatrixTest {
 		b = 3;
 		int three = (r << 16) | (g << 8) | b;
 
-		BufferedImage new_image = new BufferedImage(512, 512,
+		BufferedImage new_image = new BufferedImage(4, 4,
 				BufferedImage.TYPE_INT_RGB);
-		new_image.setRGB(0, 0, zero);
-		new_image.setRGB(1, 0, zero);
-		new_image.setRGB(2, 0, one);
-		new_image.setRGB(3, 0, one);
-		new_image.setRGB(0, 1, zero);
-		new_image.setRGB(1, 1, zero);
-		new_image.setRGB(2, 1, one);
-		new_image.setRGB(3, 1, one);
-		new_image.setRGB(0, 2, zero);
-		new_image.setRGB(1, 2, two);
-		new_image.setRGB(2, 2, two);
-		new_image.setRGB(3, 2, two);
-		new_image.setRGB(0, 3, two);
-		new_image.setRGB(1, 3, two);
-		new_image.setRGB(2, 3, three);
-		new_image.setRGB(3, 3, three);
+		new_image.setRGB(0, 0, two);
+		new_image.setRGB(1, 0, one);
+		new_image.setRGB(2, 0, zero);
+		new_image.setRGB(3, 0, zero);
+		new_image.setRGB(0, 1, one);
+		new_image.setRGB(1, 1, two);
+		new_image.setRGB(2, 1, zero);
+		new_image.setRGB(3, 1, zero);
+		new_image.setRGB(0, 2, three);
+		new_image.setRGB(1, 2, zero);
+		new_image.setRGB(2, 2, zero);
+		new_image.setRGB(3, 2, zero);
+		new_image.setRGB(0, 3, zero);
+		new_image.setRGB(1, 3, zero);
+		new_image.setRGB(2, 3, zero);
+		new_image.setRGB(3, 3, zero);
 		
-		for (int i = 0; i != new_image.getWidth(); i++) {
-			for (int j = 0; j != new_image.getHeight(); j++) {
-				if (j % 8 != 0)
-					new_image.setRGB(i, j, Color.BLACK.getRGB());
-				else
-					new_image.setRGB(i, j, Color.WHITE.getRGB());
-			}
-			
-		}
+//		for (int i = 0; i != new_image.getWidth(); i++) {
+//			for (int j = 0; j != new_image.getHeight(); j++) {
+//				if (j % 8 != 0)
+//					new_image.setRGB(i, j, Color.BLACK.getRGB());
+//				else
+//					new_image.setRGB(i, j, Color.WHITE.getRGB());
+//			}
+//			
+//		}
 		
-		//tester = new CooccurrenceMatrix(new_image);
+		tester = new CooccurrenceMatrix(new_image);
 
 		tester.extractFeature();
 		

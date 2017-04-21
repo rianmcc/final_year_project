@@ -2,8 +2,11 @@ package org.queens.app.imagesearchengine.cooccurrencematrix;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.Arrays;
+import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
+import org.queens.app.imagesearchengine.LibraryImage;
 import org.queens.app.imagesearchengine.utils.ImageUtils;
 
 public class CooccurrenceMatrix extends Feature {
@@ -37,28 +40,59 @@ public class CooccurrenceMatrix extends Feature {
 			int referenceGrayValue = 0;
 			int neighbourGrayValue = 0;
 
+			/*
+			 * The if/else is needed because negative offsets break the first
+			 * for loop so a second is needed to remedy this
+			 */
 			combinationCount = 0;
+			if (yOffset >= 0) {
+				for (int x = 0; x != imageRaster.getWidth() - xOffset; x++) {
+					for (int y = 0; y != imageRaster.getHeight() - yOffset; y++) {
+						referenceGrayValue = imageRaster.getPixel(x, y,
+								pixelData)[0];
+						neighbourGrayValue = imageRaster.getPixel(x + xOffset,
+								y + yOffset, pixelData)[0];
+						matrix[referenceGrayValue][neighbourGrayValue]++;
 
-			for (int x = 0; x != imageRaster.getWidth() - xOffset; x++) {
-				for (int y = 0; y != imageRaster.getHeight() - yOffset; y++) {
-					referenceGrayValue = imageRaster.getPixel(x, y, pixelData)[0];
-					neighbourGrayValue = imageRaster.getPixel(x + xOffset, y
-							+ yOffset, pixelData)[0];
-					matrix[referenceGrayValue][neighbourGrayValue]++;
+						// We have to make the matrix symmetrical around the
+						// diagonal
+						// so we do the same calculation again except swapping
+						// the
+						// reference
+						// and neighbour pixel
+						referenceGrayValue = imageRaster.getPixel(x + xOffset,
+								y + yOffset, pixelData)[0];
+						neighbourGrayValue = imageRaster.getPixel(x, y,
+								pixelData)[0];
+						matrix[referenceGrayValue][neighbourGrayValue]++;
 
-					// We have to make the matrix symmetrical around the
-					// diagonal
-					// so we do the same calculation again except swapping the
-					// reference
-					// and neighbour pixel
-					referenceGrayValue = imageRaster.getPixel(x + xOffset, y
-							+ yOffset, pixelData)[0];
-					neighbourGrayValue = imageRaster.getPixel(x, y, pixelData)[0];
-					matrix[referenceGrayValue][neighbourGrayValue]++;
+						// Need to add two because the matrices are symmetrical
+						// e.g. calculating (1, 0) and (-1, 0)
+						combinationCount += 2;
+					}
+				}
+			} else {
+				for (int x = 0; x != imageRaster.getWidth() - xOffset; x++) {
+					for (int y = -yOffset; y != imageRaster.getHeight(); y++) {
+						referenceGrayValue = imageRaster.getPixel(x, y,
+								pixelData)[0];
+						neighbourGrayValue = imageRaster.getPixel(x + xOffset,
+								y + yOffset, pixelData)[0];
+						matrix[referenceGrayValue][neighbourGrayValue]++;
 
-					// Need to add two because the matrices are symmetrical
-					// e.g. calculating (1, 0) and (-1, 0)
-					combinationCount += 2;
+						// We have to make the matrix symmetrical around the
+						// diagonal so we do the same calculation again except
+						// swapping the reference and neighbour pixel
+						referenceGrayValue = imageRaster.getPixel(x + xOffset,
+								y + yOffset, pixelData)[0];
+						neighbourGrayValue = imageRaster.getPixel(x, y,
+								pixelData)[0];
+						matrix[referenceGrayValue][neighbourGrayValue]++;
+
+						// Need to add two because the matrices are symmetrical
+						// e.g. calculating (1, 0) and (-1, 0)
+						combinationCount += 2;
+					}
 				}
 			}
 		}
@@ -86,7 +120,7 @@ public class CooccurrenceMatrix extends Feature {
 	// Array of feature vectors
 	// In order: energy, contrast, entropy, inverse difference moment,
 	// homogeneity
-	double featuresAvgs[];
+	double featuresAvgs[] = new double[5];
 
 	public CooccurrenceMatrix(BufferedImage image) {
 		// Copy image into WritableRaster because
@@ -100,20 +134,14 @@ public class CooccurrenceMatrix extends Feature {
 	@Override
 	public void extractFeature() {
 
-		/*
-		 * TODO Can't figure out how to calculate right diagonal matrix
-		 */
 		Matrix[] matrices = { new Matrix(1, 0), new Matrix(0, 1),
-				new Matrix(1, 1) };
+				new Matrix(1, 1), new Matrix(1, -1) };
 
 		double[] energies = new double[matrices.length];
 		double[] contrasts = new double[matrices.length];
 		double[] entropies = new double[matrices.length];
 		double[] inverseDifferenceMoments = new double[matrices.length];
 		double[] homogeineities = new double[matrices.length];
-
-		// 5 feature vectors
-		featuresAvgs = new double[5];
 
 		for (int i = 0; i != matrices.length; i++) {
 			energies[i] = getEnergy(matrices[i]);
@@ -213,15 +241,48 @@ public class CooccurrenceMatrix extends Feature {
 		return homogeneity;
 	}
 
-	public static double calculateDistance(CooccurrenceMatrix c1,
+	public static double[] calculateDistance(CooccurrenceMatrix c1,
 			CooccurrenceMatrix c2) {
-		double distance = 0;
+		double[] distance = new double[c1.getFeaturesAvgs().length];
 
 		// Manhattan Distance
 		for (int i = 0; i != c1.getFeaturesAvgs().length; i++) {
-			distance += Math.abs(c1.getFeaturesAvgs()[i]
+			distance[i] += Math.abs(c1.getFeaturesAvgs()[i]
 					- c2.getFeaturesAvgs()[i]);
 		}
 		return distance;
+	}
+
+	public static void normaliseLibraryDistances(List<LibraryImage> library) {
+		double max, min, dist;
+		double[][] textureDistances = new double[192][5];
+
+		for (int j = 0; j != library.get(0).getTextureVectorDistances().length; j++) {
+			max = library.get(0).getTextureVectorDistances()[j];
+			min = library.get(0).getTextureVectorDistances()[j];
+			dist = 0;
+			for (int i = 1; i != library.size(); i++) {
+				dist = library.get(i).getTextureVectorDistances()[j];
+				if (dist > max) {
+					max = dist;
+				}
+				if (dist < min) {
+					min = dist;
+				}
+			}
+			for (int i = 0; i != library.size(); i++) {
+				textureDistances[i][j] = (library.get(i)
+						.getTextureVectorDistances()[j] - min) / (max - min);
+			}
+		}
+
+		for (int i = 0; i != library.size(); i++) {
+			double sum = 0;
+			for (double j : textureDistances[i]) {
+				sum += j;
+			}
+			sum /= textureDistances[i].length;
+			library.get(i).setTextureDistance(sum);
+		}
 	}
 }

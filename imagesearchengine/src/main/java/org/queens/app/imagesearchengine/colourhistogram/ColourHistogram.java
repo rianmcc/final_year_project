@@ -2,21 +2,22 @@ package org.queens.app.imagesearchengine.colourhistogram;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
+import org.queens.app.imagesearchengine.LibraryImage;
 
 public class ColourHistogram extends Feature {
 	// Array size will be the number of bins in histogram
 	private int[][][] histogram;
 	
-	private BufferedImage image;
 	private Raster imageRaster;
 
 	public ColourHistogram(BufferedImage image) {
-		this.image = image;
 		imageRaster = image.getData();
 	}
 
+	// KEEP THIS FOR EXPERIMENTAL COMPARISON
 	public void extractFeatureOld() {
 		int numOfBins = 4;
 		// Multi-dimensional array representing a matrix for
@@ -41,7 +42,6 @@ public class ColourHistogram extends Feature {
 		// colours in an image of different intensities
 		histogram = new int[numOfHueBins][numOfSatBins][numOfValBins];
 		int[] pixelValues = new int[3];
-		int hueBinSize = 256 / numOfHueBins;
 		int satBin = -1;
 		int valBin = -1;
 		int hueBin = -1;
@@ -131,7 +131,10 @@ public class ColourHistogram extends Feature {
 		return histogram;
 	}
 	
-	public static double calculateDistance(ColourHistogram h1, ColourHistogram h2) {
+	/*
+	 * L1 distance measure
+	 */
+	public static double calculateDistanceOld(ColourHistogram h1, ColourHistogram h2) {
 		double distance = 0;
 
 		for (int i = 0; i != h1.getHistogram().length; i++)
@@ -142,6 +145,44 @@ public class ColourHistogram extends Feature {
 				}
 		
 		return distance;
+	}
+	
+	/*
+	 * Weighted measure from
+	 * Image Indexing Using Color Correlograms pp. 4
+	 */
+	public static double calculateDistance(ColourHistogram h1, ColourHistogram h2) {
+		double distance = 0;
+
+		for (int i = 0; i != h1.getHistogram().length; i++)
+			for (int j = 0; j != h1.getHistogram()[0].length; j++)
+				for (int k = 0; k != h1.getHistogram()[0][0].length; k++) {
+					distance += (double) (Math.abs(h1.getHistogram()[i][j][k]
+							- h2.getHistogram()[i][j][k]))/(1+h1.getHistogram()[i][j][k]
+									+ h2.getHistogram()[i][j][k]);
+				}
+		
+		return distance;
+	}
+	
+	public static void normaliseLibraryDistances(List<LibraryImage> library) {
+		double max, min, dist;
+		
+		max = library.get(0).getColorDistance();
+		min = library.get(0).getColorDistance();
+		dist = 0;
+		for (int i = 1; i != library.size(); i++) {
+			dist = library.get(i).getColorDistance();
+			if (dist > max) {
+				max = dist;
+			}
+			if (dist < min) {
+				min = dist;
+			}
+		}	
+		for (LibraryImage img : library) {
+			img.setColorDistance((img.getColorDistance() - min)/(max - min));
+		}
 	}
 
 }

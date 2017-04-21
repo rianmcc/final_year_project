@@ -2,6 +2,7 @@ package org.queens.app.imagesearchengine;
 
 import java.awt.image.BufferedImage;
 
+import org.queens.app.imagesearchengine.colourautocorrelogram.ColourAutoCorrelogram;
 import org.queens.app.imagesearchengine.colourhistogram.ColourHistogram;
 import org.queens.app.imagesearchengine.cooccurrencematrix.CooccurrenceMatrix;
 import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
@@ -11,6 +12,7 @@ public class QueryImage {
 	private ColourHistogram colourHistogram;
 	private EdgeHistogram edgeHistogram;
 	private CooccurrenceMatrix cooccurrenceMatrix;
+	private ColourAutoCorrelogram colourCorrelogram;
 	
 	public QueryImage(BufferedImage imageData) {
 		this.imageData = imageData;
@@ -46,5 +48,13 @@ public class QueryImage {
 
 	public void setCooccurrenceMatrix(CooccurrenceMatrix cooccurrenceMatrix) {
 		this.cooccurrenceMatrix = cooccurrenceMatrix;
+	}
+
+	public ColourAutoCorrelogram getColourCorrelogram() {
+		return colourCorrelogram;
+	}
+
+	public void setColourCorrelogram(ColourAutoCorrelogram colourCorrelogram) {
+		this.colourCorrelogram = colourCorrelogram;
 	}
 }

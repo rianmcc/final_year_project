@@ -2,6 +2,8 @@ package org.queens.app.imagesearchengine;
 
 import java.awt.image.BufferedImage;
 
+import org.queens.app.imagesearchengine.EnumCategory.Category;
+import org.queens.app.imagesearchengine.colourautocorrelogram.ColourAutoCorrelogram;
 import org.queens.app.imagesearchengine.colourhistogram.ColourHistogram;
 import org.queens.app.imagesearchengine.cooccurrencematrix.CooccurrenceMatrix;
 import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
@@ -9,10 +11,28 @@ import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
 public class LibraryImage implements Comparable<LibraryImage> {
 	private BufferedImage imageData;
 	private double distance;
+	private double colorDistance;
+	private double shapeDistance;
+	private double[] textureVectorDistances;
+	private double textureDistance;
+	private double colourCorrelogramDistance;
 	private ColourHistogram colourHistogram;
 	private EdgeHistogram edgeHistogram;
 	private CooccurrenceMatrix cooccurrenceMatrix;
+	private ColourAutoCorrelogram colourCorrelogram;
 	
+	// Used for precision/recall test
+	private Category category;
+	public Category getCategory() {
+		return category;
+	}
+	public LibraryImage(BufferedImage imageData, String fileName) {
+		category = EnumCategory.getCategoryFromString(fileName);
+		this.imageData = imageData;
+	}
+	// Used for precision/recall test
+	
+
 	public LibraryImage(BufferedImage imageData) {
 		this.imageData = imageData;
 	}
@@ -24,6 +44,23 @@ public class LibraryImage implements Comparable<LibraryImage> {
 	public void setImageData(BufferedImage imageData) {
 		this.imageData = imageData;
 	}
+	
+	public double[] getTextureVectorDistances() {
+		return textureVectorDistances;
+	}
+
+	public void setTextureVectorDistances(double[] textureVectorDistances) {
+		this.textureVectorDistances = textureVectorDistances;
+	}
+
+	public double getTextureDistance() {
+		return textureDistance;
+	}
+
+	public void setTextureDistance(double textureDistance) {
+		this.textureDistance = textureDistance;
+	}
+
 
 	public double getDistance() {
 		return distance;
@@ -57,6 +94,34 @@ public class LibraryImage implements Comparable<LibraryImage> {
 		this.cooccurrenceMatrix = cooccurrenceMatrix;
 	}
 
+	public double getColorDistance() {
+		return colorDistance;
+	}
+
+	public void setColorDistance(double colorDistance) {
+		this.colorDistance = colorDistance;
+	}
+
+	public double getShapeDistance() {
+		return shapeDistance;
+	}
+
+	public void setShapeDistance(double shapeDistance) {
+		this.shapeDistance = shapeDistance;
+	}
+	
+	public double getColourCorrelogramDistance() {
+		return colourCorrelogramDistance;
+	}
+	public void setColourCorrelogramDistance(double correlogramDistance) {
+		this.colourCorrelogramDistance = correlogramDistance;
+	}
+	public ColourAutoCorrelogram getColourCorrelogram() {
+		return colourCorrelogram;
+	}
+	public void setColourCorrelogram(ColourAutoCorrelogram colourCorrelogram) {
+		this.colourCorrelogram = colourCorrelogram;
+	}
 	@Override
 	public int compareTo(LibraryImage o) {
 		double compareDistance = ((LibraryImage)o).getDistance();
