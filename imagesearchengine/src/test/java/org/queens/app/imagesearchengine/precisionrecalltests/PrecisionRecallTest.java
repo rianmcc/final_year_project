@@ -13,8 +13,9 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 import org.queens.app.imagesearchengine.EnumCategory;
 import org.queens.app.imagesearchengine.EnumCategory.Category;
-import org.queens.app.imagesearchengine.Main;
+import org.queens.app.imagesearchengine.gui.MainGUI;
 import org.queens.app.imagesearchengine.QueryImage;
+import org.queens.app.imagesearchengine.Retriever;
 
 public class PrecisionRecallTest {
 
@@ -36,7 +37,7 @@ public class PrecisionRecallTest {
 		File testdataDirectory = new File("testdata/query_images");
 		File[] query_images = testdataDirectory.listFiles();
 
-		Main tester = new Main();
+		Retriever tester = new Retriever(new File("testdata/library"));
 		Category queryCategory = null;
 
 		int numOfQueryImages = query_images.length;
