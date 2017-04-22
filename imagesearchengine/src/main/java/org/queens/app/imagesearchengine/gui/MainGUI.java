@@ -161,13 +161,13 @@ public class MainGUI extends Application {
     	retriever = new Retriever(new File("testdata/library"));
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.10));
         
-    	//retriever.indexEdgeHistograms();
+    	retriever.indexEdgeHistograms();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.25));
-      //  retriever.indexColourCorrelograms();
+        retriever.indexColourCorrelograms();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.5));
         retriever.indexColourHistograms();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.75));
-       // retriever.indexCooccurrenceMatrices();
+        retriever.indexCooccurrenceMatrices();
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(1));
         
         

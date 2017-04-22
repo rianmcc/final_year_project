@@ -55,21 +55,32 @@ public class Retriever {
 
 		for (LibraryImage img : library) {
 			img.setColorDistance(getColorDistance(selectedQueryImage, img));
-//			img.setShapeDistance(getShapeDistance(selectedQueryImage, img));
-//			img.setTextureVectorDistances(getTextureDistance(
-//					selectedQueryImage, img));
-//			img.setColourCorrelogramDistance(getCorrelogramDistance(
-//					selectedQueryImage, img));
+			img.setShapeDistance(getShapeDistance(selectedQueryImage, img));
+			img.setTextureVectorDistances(getTextureDistance(
+					selectedQueryImage, img));
+			img.setColourCorrelogramDistance(getCorrelogramDistance(
+					selectedQueryImage, img));
 		}
 
 		ColourHistogram.normaliseLibraryDistances(library);
-//		EdgeHistogram.normaliseLibraryDistances(library);
-//		CooccurrenceMatrix.normaliseLibraryDistances(library);
-//		ColourAutoCorrelogram.normaliseLibraryDistances(library);
-
+		EdgeHistogram.normaliseLibraryDistances(library);
+		CooccurrenceMatrix.normaliseLibraryDistances(library);
+		ColourAutoCorrelogram.normaliseLibraryDistances(library);
+		
 		double finalDistance;
+		double colourHistW = 1d;
+		double shapeW = 1d;
+		double textureW = 1d;
+		double correlogramW = 1d;
 		for (LibraryImage img : library) {
-			finalDistance = (img.getColorDistance()) / 1;
+			finalDistance = 0;
+			
+			finalDistance += colourHistW * img.getColorDistance();
+			finalDistance += shapeW * img.getShapeDistance();
+			finalDistance += textureW * img.getTextureDistance();
+			finalDistance += correlogramW * img.getColourCorrelogramDistance();
+			finalDistance /= colourHistW + shapeW + textureW + correlogramW;
+			
 			img.setDistance(finalDistance);
 		}
 
@@ -81,22 +92,26 @@ public class Retriever {
 	 */
 	public void indexColourCorrelograms() {
 		for (LibraryImage img : library) {
-			img.setColourCorrelogram(new ColourAutoCorrelogram(img.getImageData()));
+			img.setColourCorrelogram(new ColourAutoCorrelogram(img
+					.getImageData()));
 			img.getColourCorrelogram().extractFeature();
 		}
 	}
+
 	public void indexColourHistograms() {
 		for (LibraryImage img : library) {
 			img.setColourHistogram(new ColourHistogram(img.getImageData()));
 			img.getColourHistogram().extractFeature();
 		}
 	}
+
 	public void indexEdgeHistograms() {
 		for (LibraryImage img : library) {
 			img.setEdgeHistogram(new EdgeHistogram(img.getImageData()));
 			img.getEdgeHistogram().extractFeature();
 		}
 	}
+
 	public void indexCooccurrenceMatrices() {
 		for (LibraryImage img : library) {
 			img.setCooccurrenceMatrix(new CooccurrenceMatrix(img.getImageData()));
