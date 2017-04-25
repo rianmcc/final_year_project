@@ -17,18 +17,18 @@ public class EdgeHistogram extends Feature {
 
 	// Threshold value for deciding between an
 	// edge feature or NO_EDGE
-	private double threshold = 11;
+	private double threshold;
 
 	// Constants for edge types
-	private static final int VERTICAL_EDGE = 0;
-	private static final int HORIZONTAL_EDGE = 1;
-	private static final int DEGREE45_EDGE = 2;
-	private static final int DEGREE135_EDGE = 3;
-	private static final int NON_DIRECTIONAL_EDGE = 4;
+//	private static final int VERTICAL_EDGE = 0;
+//	private static final int HORIZONTAL_EDGE = 1;
+//	private static final int DEGREE45_EDGE = 2;
+//	private static final int DEGREE135_EDGE = 3;
+//	private static final int NON_DIRECTIONAL_EDGE = 4;
 	private static final int NO_EDGE = 5;
 
 	// Number of pixels on one axis
-	private int blockSize = 16;
+	private int blockSize;
 	private int subImageSize = 128;
 
 	// Image needs to be converted to grayscale
@@ -41,6 +41,18 @@ public class EdgeHistogram extends Feature {
 		// image.
 		imageRaster = image.copyData(null);
 		ImageUtils.makeGray(imageRaster);
+		threshold = 11;
+		blockSize = 16;
+	}
+	
+	public EdgeHistogram(BufferedImage image, int threshold, int blockSize) {
+		// Copy image into WritableRaster because
+		// we don't want to modify the original
+		// image.
+		imageRaster = image.copyData(null);
+		ImageUtils.makeGray(imageRaster);
+		this.threshold = threshold;
+		this.blockSize = blockSize;
 	}
 
 	public int[] getBins() {
@@ -200,6 +212,7 @@ public class EdgeHistogram extends Feature {
 	}
 	
 	public static double calculateDistance(EdgeHistogram e1, EdgeHistogram e2) {
+		// TODO decide whether to use global distance or not. Experiment with it
 		double localEdgeDistance = 0;
 		double globalEdgeDistance = 0;
 		double edgeDistance = 0;

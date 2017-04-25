@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 import org.queens.app.imagesearchengine.EnumCategory;
 import org.queens.app.imagesearchengine.EnumCategory.Category;
-import org.queens.app.imagesearchengine.gui.MainGUI;
 import org.queens.app.imagesearchengine.QueryImage;
 import org.queens.app.imagesearchengine.Retriever;
 

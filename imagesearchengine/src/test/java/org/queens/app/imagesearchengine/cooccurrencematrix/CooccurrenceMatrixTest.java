@@ -2,17 +2,16 @@ package org.queens.app.imagesearchengine.cooccurrencematrix;
 
 import static org.junit.Assert.*;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
 public class CooccurrenceMatrixTest {
+	// TODO This whole class needs tested
 
 	@Test
 	public final void testExtractFeature() {
@@ -21,7 +20,6 @@ public class CooccurrenceMatrixTest {
 			tester = new CooccurrenceMatrix(ImageIO.read(new File(
 					"testdata/query_images/Crowds013.jpg")));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

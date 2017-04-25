@@ -11,14 +11,23 @@ public class ColourAutoCorrelogram extends Feature {
 
 	Raster imageRaster;
 	double[][] autoCorrelogram;
+	int[] distanceSet;
 
 	float binsPerColour = 4;
 	float redValues = 256f / 4;
 	float greenValues = 256f / 4;
 	float blueValues = 256f / 4;
-
+	
+	// Constructor with default distanceSet
 	public ColourAutoCorrelogram(BufferedImage image) {
 		imageRaster = image.getData();
+		distanceSet = new int[]{1,3,5,7};
+	}
+
+	// Constructor with custom distanceSet taken as parameter
+	public ColourAutoCorrelogram(BufferedImage image, int[] distanceSet) {
+		imageRaster = image.getData();
+		this.distanceSet = distanceSet;
 	}
 
 	/*
@@ -34,9 +43,6 @@ public class ColourAutoCorrelogram extends Feature {
 
 	@Override
 	public void extractFeature() {
-
-		// The distances to be calculated in the autocorrelogram
-		int[] distanceSet = { 1, 3, 5, 7 };
 
 		// The number of bins the auto-correlogram will use for colours
 		int numOfBins = 64;
@@ -65,6 +71,7 @@ public class ColourAutoCorrelogram extends Feature {
 		int imageWidth = imageRaster.getWidth();
 		int imageHeight = imageRaster.getHeight();
 
+		// Chebyshev distance
 		for (int x = 0; x != imageWidth; x++) {
 			for (int y = 0; y != imageHeight; y++) {
 				int pColour = quantizedImage[x][y];

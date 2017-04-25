@@ -2,7 +2,6 @@ package org.queens.app.imagesearchengine.cooccurrencematrix;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.util.Arrays;
 import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;

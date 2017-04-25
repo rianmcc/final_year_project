@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -14,18 +13,20 @@ import org.queens.app.imagesearchengine.colourautocorrelogram.ColourAutoCorrelog
 public class ColourAutoCorrelogramTest {
 
 	@Test
-	public void test() {
+	public final void testExtractFeature() {
 		ColourAutoCorrelogram tester = null;
 		try {
 			tester = new ColourAutoCorrelogram(ImageIO.read(new File(
-					"testdata/query_images/Crowds013.jpg")));
+					"src/test/resources/correlogramTest.png")),new int[]{1});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		tester.extractFeature();
 		
-		System.out.println(Arrays.deepToString(tester.autoCorrelogram));
+		assertEquals(2f, tester.getCorrelogram()[0][0], 1e-15);
+		assertEquals(5f, tester.getCorrelogram()[63][0], 1e-15);
+		
 	}
 
 }

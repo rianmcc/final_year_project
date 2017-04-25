@@ -60,4 +60,46 @@ public class ImageUtils {
 			}
 	}
 
+	public static int[] rgbToHsv(int[] rgb) {
+		float hue = 0f;
+		float saturation = 0f;
+		float value = 0f;
+		float r = rgb[0] / 255f;
+		float g = rgb[1] / 255f;
+		float b = rgb[2] / 255f;
+		
+		float min = Math.min(Math.min(r, g), b);
+		float max = Math.max(Math.max(r, g), b);
+		float delta = max - min;
+		
+		value = max;
+		
+		if (max == r) {
+			if (g >= b) {
+				hue = 60 * ((g-b)/delta);
+			} else {
+				hue = 60 * (((g-b)/delta) % 6) + 360;
+			}
+		}
+		else if (max == g) {
+			hue = 60 * (((b-r)/delta) + 2);
+		}
+		else if (max == b) {
+			hue = 60 * (((r-g)/delta) + 4);
+		}
+		
+		if (max == 0) {
+			saturation = 0;
+		} else
+			saturation = delta / max;
+		
+		int[] hsv = new int[3];
+		hsv[0] = (int) hue;
+		hsv[1] = (int) (saturation * 100);
+		hsv[2] = (int) (value * 100);
+		
+		return hsv;
+	
+	}
+
 }

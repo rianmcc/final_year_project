@@ -2,9 +2,6 @@ package org.queens.app.imagesearchengine.gui;
 
 import javafx.application.Platform;
 import javafx.application.Preloader;
-import javafx.application.Preloader.PreloaderNotification;
-import javafx.application.Preloader.ProgressNotification;
-import javafx.application.Preloader.StateChangeNotification;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

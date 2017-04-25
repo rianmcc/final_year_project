@@ -12,94 +12,68 @@ import org.junit.Test;
 import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
 
 public class EdgeHistogramTest {
-
+	
 	@Test
-	public void test() {
+	public final void testImageBlockVertical() {
 		BufferedImage testImage = null;
 		try {
-			testImage = ImageIO.read(new File("src/test/resources/histogram_test.jpg"));
+			testImage = ImageIO.read(new File("src/test/resources/imageBlockVertical.bmp"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		EdgeHistogram tester = new EdgeHistogram(testImage);
 		
-		tester.getEdgeFeature(188, 153);
-		
+		assertEquals(0, tester.getEdgeFeature(0, 0));
 	}
 	
 	@Test
-	public void testLocalHistogram() {
+	public final void testImageBlockHorizontal() {
 		BufferedImage testImage = null;
 		try {
-			testImage = ImageIO.read(new File("src/test/resources/histogram_test.jpg"));
+			testImage = ImageIO.read(new File("src/test/resources/imageBlockHorizontal.bmp"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		EdgeHistogram tester = new EdgeHistogram(testImage);
 		
-		int[] localHistogram = tester.calculateLocalHistogram(384, 384);
-		
-        String[] strings = {"Vertical: ", "Horizontal: ", "45 Diagonal: ", "135 Diagonal: ", "Non-directional: "};
-        for (int w = 0; w != 5; w++) {
-        	System.out.println(strings[w] + localHistogram[w]);
-        }
+		assertEquals(1, tester.getEdgeFeature(0, 0));
 	}
 	
 	@Test
-	public void testFullHistogram() {
+	public final void testImageBlock45Degree() {
 		BufferedImage testImage = null;
 		try {
-			testImage = ImageIO.read(new File("testdata/query_images/Crowds013.jpg"));
+			testImage = ImageIO.read(new File("src/test/resources/imageBlock45Degree.bmp"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		EdgeHistogram tester = new EdgeHistogram(testImage);
 		
-		tester.extractFeature();
-		
-        int[] localBins = tester.getBins();
-        
-        for (int value: localBins) {
-        	System.out.println(value);
-        }
+		assertEquals(2, tester.getEdgeFeature(0, 0));
 	}
 	
 	@Test
-	public void testImageBlockVertical() {
+	public final void testImageBlock135Degree() {
 		BufferedImage testImage = null;
 		try {
-			testImage = ImageIO.read(new File("src/test/resources/imageBlockVertical.png"));
+			testImage = ImageIO.read(new File("src/test/resources/imageBlock135Degree.bmp"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		EdgeHistogram tester = new EdgeHistogram(testImage);
 		
-		tester.getEdgeFeature(0, 0);
+		assertEquals(3, tester.getEdgeFeature(0, 0));
 	}
 	
 	@Test
-	public void testImageBlockHorizontal() {
+	public final void testLocalHistogram() {
 		BufferedImage testImage = null;
 		try {
-			testImage = ImageIO.read(new File("src/test/resources/imageBlockHorizontal.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		EdgeHistogram tester = new EdgeHistogram(testImage);
-		
-		tester.getEdgeFeature(0, 0);
-	}
-	
-	@Test
-	public void testSubImage() {
-		BufferedImage testImage = null;
-		try {
-			testImage = ImageIO.read(new File("src/test/resources/saved.png"));
+			testImage = ImageIO.read(new File("src/test/resources/subImageTest.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -108,11 +82,30 @@ public class EdgeHistogramTest {
 		
 		int[] localHistogram = tester.calculateLocalHistogram(0, 0);
 		
-        String[] strings = {"Vertical: ", "Horizontal: ", "45 Diagonal: ", "135 Diagonal: ", "Non-directional: "};
-        for (int w = 0; w != 5; w++) {
-        	System.out.println(strings[w] + localHistogram[w]);
-        }
+		assertArrayEquals(new int[]{64,0,0,0,0}, localHistogram);
+		
 	}
+	
+	@Test
+	public final void testExtractFeature() {
+		BufferedImage testImage = null;
+		try {
+			testImage = ImageIO.read(new File("src/test/resources/edgeHistogramTest.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		EdgeHistogram tester = new EdgeHistogram(testImage);
+		
+		tester.extractFeature();
+				
+		assertEquals(64, tester.getBins()[0]);
+		assertEquals(64, tester.getBins()[26]);
+		assertEquals(64, tester.getBins()[50]);
+		assertEquals(64, tester.getBins()[76]);
 
+
+
+	}
 
 }

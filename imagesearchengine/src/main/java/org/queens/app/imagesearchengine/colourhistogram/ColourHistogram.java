@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
 import org.queens.app.imagesearchengine.LibraryImage;
+import org.queens.app.imagesearchengine.utils.ImageUtils;
 
 public class ColourHistogram extends Feature {
 	// Array size will be the number of bins in histogram
@@ -50,7 +51,7 @@ public class ColourHistogram extends Feature {
 		for (int x = 0; x != imageRaster.getWidth(); x++) {
 			for (int y = 0; y != imageRaster.getHeight(); y++) {
 				pixelValues = imageRaster.getPixel(x, y, pixelValues);
-				int[] hsv = rgbToHsv(pixelValues);
+				int[] hsv = ImageUtils.rgbToHsv(pixelValues);
 				
 				// Get hue bin
 				if (hsv[0] > 314) {
@@ -84,48 +85,6 @@ public class ColourHistogram extends Feature {
 			}
 		}
 	}
-	
-	int[] rgbToHsv(int[] rgb) {
-		float hue = 0f;
-		float saturation = 0f;
-		float value = 0f;
-		float r = rgb[0] / 255f;
-		float g = rgb[1] / 255f;
-		float b = rgb[2] / 255f;
-		
-		float min = Math.min(Math.min(r, g), b);
-		float max = Math.max(Math.max(r, g), b);
-		float delta = max - min;
-		
-		value = max;
-		
-		if (max == r) {
-			if (g >= b) {
-				hue = 60 * ((g-b)/delta);
-			} else {
-				hue = 60 * (((g-b)/delta) % 6) + 360;
-			}
-		}
-		else if (max == g) {
-			hue = 60 * (((b-r)/delta) + 2);
-		}
-		else if (max == b) {
-			hue = 60 * (((r-g)/delta) + 4);
-		}
-		
-		if (max == 0) {
-			saturation = 0;
-		} else
-			saturation = delta / max;
-		
-		int[] hsv = new int[3];
-		hsv[0] = (int) hue;
-		hsv[1] = (int) (saturation * 100);
-		hsv[2] = (int) (value * 100);
-		
-		return hsv;
-
-	}
 
 	public int[][][] getHistogram() {
 		return histogram;
@@ -134,7 +93,7 @@ public class ColourHistogram extends Feature {
 	/*
 	 * L1 distance measure
 	 */
-	public static double calculateDistanceOld(ColourHistogram h1, ColourHistogram h2) {
+	public static double calculateDistancel1(ColourHistogram h1, ColourHistogram h2) {
 		double distance = 0;
 
 		for (int i = 0; i != h1.getHistogram().length; i++)
