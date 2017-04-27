@@ -4,13 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-
-import org.queens.app.imagesearchengine.QueryImage;
-import org.queens.app.imagesearchengine.Retriever;
-
-import com.sun.javafx.application.LauncherImpl;
-
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -28,6 +21,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import javax.imageio.ImageIO;
+
+import org.queens.app.imagesearchengine.QueryImage;
+import org.queens.app.imagesearchengine.Retriever;
+
+import com.sun.javafx.application.LauncherImpl;
 
 public class MainGUI extends Application {
 
@@ -88,9 +88,9 @@ public class MainGUI extends Application {
 				} else {
 					retriever.submitQuery(selectedQueryImage);
 					
-					ArrayList<Image> libraryImages = new ArrayList<Image>();
-					for (int i = 0; i != retriever.getLibrary().size(); i++) {
-						libraryImages.add(SwingFXUtils.toFXImage(retriever.getLibrary().get(i).getImageData(), null));
+					ArrayList<Image> galleryImages = new ArrayList<Image>();
+					for (int i = 0; i != retriever.getGallery().size(); i++) {
+						galleryImages.add(SwingFXUtils.toFXImage(retriever.getGallery().get(i).getImageData(), null));
 					}
 					
 					GridPane imageGrid = new GridPane();
@@ -100,12 +100,12 @@ public class MainGUI extends Application {
 					int imageRow = 0;
 					Label distance;
 					// stackoverflow.com/questions/25374578/adding-images-to-a-gridpane-javafx
-					for (int i = 0; i != libraryImages.size(); i++) {
-						ImageView picture = new ImageView(libraryImages.get(i));
+					for (int i = 0; i != galleryImages.size(); i++) {
+						ImageView picture = new ImageView(galleryImages.get(i));
 						picture.setFitHeight(156);
 						picture.setFitWidth(156);
 						
-						distance = new Label(String.format("Distance: %.5f",retriever.getLibrary().get(i).getDistance()));
+						distance = new Label(String.format("Distance: %.5f",retriever.getGallery().get(i).getDistance()));
 						GridPane.setHalignment(distance, HPos.CENTER);
 						
 						imageGrid.add(picture, imageCol, imageRow);
@@ -145,7 +145,7 @@ public class MainGUI extends Application {
 	
     @Override
     public void init() throws Exception {
-    	retriever = new Retriever(new File("testdata/library"));
+    	retriever = new Retriever(new File("testdata/gallery"));
         LauncherImpl.notifyPreloader(this, new PreloaderGUI.ProgressNotification(.10));
         
     	retriever.indexEdgeHistograms();

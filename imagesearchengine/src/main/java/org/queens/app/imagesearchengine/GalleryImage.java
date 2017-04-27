@@ -8,7 +8,7 @@ import org.queens.app.imagesearchengine.colourhistogram.ColourHistogram;
 import org.queens.app.imagesearchengine.cooccurrencematrix.CooccurrenceMatrix;
 import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
 
-public class LibraryImage implements Comparable<LibraryImage> {
+public class GalleryImage implements Comparable<GalleryImage> {
 	private BufferedImage imageData;
 	private double distance;
 	private double colorDistance;
@@ -26,14 +26,14 @@ public class LibraryImage implements Comparable<LibraryImage> {
 	public Category getCategory() {
 		return category;
 	}
-	public LibraryImage(BufferedImage imageData, String fileName) {
+	public GalleryImage(BufferedImage imageData, String fileName) {
 		category = EnumCategory.getCategoryFromString(fileName);
 		this.imageData = imageData;
 	}
 	// Used for precision/recall test
 	
 
-	public LibraryImage(BufferedImage imageData) {
+	public GalleryImage(BufferedImage imageData) {
 		this.imageData = imageData;
 	}
 
@@ -123,8 +123,8 @@ public class LibraryImage implements Comparable<LibraryImage> {
 		this.colourCorrelogram = colourCorrelogram;
 	}
 	@Override
-	public int compareTo(LibraryImage o) {
-		double compareDistance = ((LibraryImage)o).getDistance();
+	public int compareTo(GalleryImage o) {
+		double compareDistance = ((GalleryImage)o).getDistance();
 		
 		return Double.compare(distance, compareDistance);
 	}

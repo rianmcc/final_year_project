@@ -5,7 +5,7 @@ import java.awt.image.WritableRaster;
 import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
-import org.queens.app.imagesearchengine.LibraryImage;
+import org.queens.app.imagesearchengine.GalleryImage;
 import org.queens.app.imagesearchengine.utils.ImageUtils;
 
 public class CooccurrenceMatrix extends Feature {
@@ -304,16 +304,16 @@ public class CooccurrenceMatrix extends Feature {
 		return distance;
 	}
 
-	public static void normaliseLibraryDistances(List<LibraryImage> library) {
+	public static void normaliseGalleryDistances(List<GalleryImage> gallery) {
 		double max, min, dist;
 		double[][] textureDistances = new double[192][6];
 
-		for (int j = 0; j != library.get(0).getTextureVectorDistances().length; j++) {
-			max = library.get(0).getTextureVectorDistances()[j];
-			min = library.get(0).getTextureVectorDistances()[j];
+		for (int j = 0; j != gallery.get(0).getTextureVectorDistances().length; j++) {
+			max = gallery.get(0).getTextureVectorDistances()[j];
+			min = gallery.get(0).getTextureVectorDistances()[j];
 			dist = 0;
-			for (int i = 1; i != library.size(); i++) {
-				dist = library.get(i).getTextureVectorDistances()[j];
+			for (int i = 1; i != gallery.size(); i++) {
+				dist = gallery.get(i).getTextureVectorDistances()[j];
 				if (dist > max) {
 					max = dist;
 				}
@@ -321,19 +321,19 @@ public class CooccurrenceMatrix extends Feature {
 					min = dist;
 				}
 			}
-			for (int i = 0; i != library.size(); i++) {
-				textureDistances[i][j] = (library.get(i)
+			for (int i = 0; i != gallery.size(); i++) {
+				textureDistances[i][j] = (gallery.get(i)
 						.getTextureVectorDistances()[j] - min) / (max - min);
 			}
 		}
 
-		for (int i = 0; i != library.size(); i++) {
+		for (int i = 0; i != gallery.size(); i++) {
 			double sum = 0;
 			for (double j : textureDistances[i]) {
 				sum += j;
 			}
 			sum /= textureDistances[i].length;
-			library.get(i).setTextureDistance(sum);
+			gallery.get(i).setTextureDistance(sum);
 		}
 	}
 }

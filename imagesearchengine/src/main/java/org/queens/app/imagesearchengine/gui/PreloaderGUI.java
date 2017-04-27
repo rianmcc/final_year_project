@@ -27,7 +27,7 @@ public class PreloaderGUI extends Preloader {
     public void init() throws Exception {
 
         Platform.runLater(() -> {
-            Label title = new Label("Indexing library!\nplease wait...");
+            Label title = new Label("Indexing gallery!\nplease wait...");
             description = new Label(" ");
             description.setTextAlignment(TextAlignment.CENTER);
             title.setTextAlignment(TextAlignment.CENTER);

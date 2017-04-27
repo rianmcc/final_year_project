@@ -5,7 +5,7 @@ import java.awt.image.Raster;
 import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
-import org.queens.app.imagesearchengine.LibraryImage;
+import org.queens.app.imagesearchengine.GalleryImage;
 import org.queens.app.imagesearchengine.utils.ImageUtils;
 
 public class ColourHistogram extends Feature {
@@ -124,14 +124,14 @@ public class ColourHistogram extends Feature {
 		return distance;
 	}
 	
-	public static void normaliseLibraryDistances(List<LibraryImage> library) {
+	public static void normaliseGalleryDistances(List<GalleryImage> gallery) {
 		double max, min, dist;
 		
-		max = library.get(0).getColorDistance();
-		min = library.get(0).getColorDistance();
+		max = gallery.get(0).getColorDistance();
+		min = gallery.get(0).getColorDistance();
 		dist = 0;
-		for (int i = 1; i != library.size(); i++) {
-			dist = library.get(i).getColorDistance();
+		for (int i = 1; i != gallery.size(); i++) {
+			dist = gallery.get(i).getColorDistance();
 			if (dist > max) {
 				max = dist;
 			}
@@ -139,7 +139,7 @@ public class ColourHistogram extends Feature {
 				min = dist;
 			}
 		}	
-		for (LibraryImage img : library) {
+		for (GalleryImage img : gallery) {
 			img.setColorDistance((img.getColorDistance() - min)/(max - min));
 		}
 	}

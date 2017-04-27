@@ -36,7 +36,7 @@ public class PrecisionRecallTest {
 		File testdataDirectory = new File("testdata/query_images");
 		File[] query_images = testdataDirectory.listFiles();
 
-		Retriever tester = new Retriever(new File("testdata/library"));
+		Retriever tester = new Retriever(new File("testdata/gallery"));
 		Category queryCategory = null;
 
 		int numOfQueryImages = query_images.length;
@@ -73,15 +73,15 @@ public class PrecisionRecallTest {
 				LOGGER.fine("Precision/Recall for " + returnNumber + " returns");
 				relevantImagesReturned = 0;
 				for (int i = 0; i != returnNumber; i++) {
-					if (tester.getLibrary().get(i).getCategory() == queryCategory) {
+					if (tester.getGallery().get(i).getCategory() == queryCategory) {
 						LOGGER.finer("Position: " + i + ". Category: "
-								+ tester.getLibrary().get(i).getCategory() + ". Distance: "
-								+ tester.getLibrary().get(i).getDistance() + ". Matches!");
+								+ tester.getGallery().get(i).getCategory() + ". Distance: "
+								+ tester.getGallery().get(i).getDistance() + ". Matches!");
 						relevantImagesReturned++;
 					} else {
 						LOGGER.finer("Position: " + i + ". Category: "
-								+ tester.getLibrary().get(i).getCategory() + ". Distance: "
-								+ tester.getLibrary().get(i).getDistance()
+								+ tester.getGallery().get(i).getCategory() + ". Distance: "
+								+ tester.getGallery().get(i).getDistance()
 								+ ". Doesn't Match!");
 					}
 				}

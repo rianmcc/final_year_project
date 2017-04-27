@@ -5,7 +5,7 @@ import java.awt.image.Raster;
 import java.util.List;
 
 import org.queens.app.imagesearchengine.Feature;
-import org.queens.app.imagesearchengine.LibraryImage;
+import org.queens.app.imagesearchengine.GalleryImage;
 
 public class ColourAutoCorrelogram extends Feature {
 
@@ -181,14 +181,14 @@ public class ColourAutoCorrelogram extends Feature {
 		return distance;
 	}
 
-	public static void normaliseLibraryDistances(List<LibraryImage> library) {
+	public static void normaliseGalleryDistances(List<GalleryImage> gallery) {
 		double max, min, dist;
 
-		max = library.get(0).getColourCorrelogramDistance();
-		min = library.get(0).getColourCorrelogramDistance();
+		max = gallery.get(0).getColourCorrelogramDistance();
+		min = gallery.get(0).getColourCorrelogramDistance();
 		dist = 0;
-		for (int i = 1; i != library.size(); i++) {
-			dist = library.get(i).getColourCorrelogramDistance();
+		for (int i = 1; i != gallery.size(); i++) {
+			dist = gallery.get(i).getColourCorrelogramDistance();
 			if (dist > max) {
 				max = dist;
 			}
@@ -196,7 +196,7 @@ public class ColourAutoCorrelogram extends Feature {
 				min = dist;
 			}
 		}
-		for (LibraryImage img : library) {
+		for (GalleryImage img : gallery) {
 			img.setColourCorrelogramDistance((img
 					.getColourCorrelogramDistance() - min) / (max - min));
 		}
