@@ -119,7 +119,7 @@ public class CooccurrenceMatrix extends Feature {
 	// Array of feature vectors
 	// In order: energy, contrast, entropy, inverse difference moment,
 	// homogeneity
-	double featuresAvgs[] = new double[5];
+	double featuresAvgs[] = new double[6];
 
 	public CooccurrenceMatrix(BufferedImage image) {
 		// Copy image into WritableRaster because
@@ -127,7 +127,18 @@ public class CooccurrenceMatrix extends Feature {
 		// image.
 		imageRaster = image.copyData(null);
 		ImageUtils.makeGray(imageRaster);
-		numOfColours = 256;
+		numOfColours = 64;
+		// Reduce to numOfColours colours
+		int[] pixel = new int[3];
+		for (int x = 0; x != imageRaster.getWidth(); x++) {
+			for (int y = 0; y != imageRaster.getHeight(); y++) {
+				pixel = imageRaster.getPixel(x, y, pixel);
+				for (int i = 0; i != pixel.length; i++) {
+					pixel[i] = pixel[i] / 4;
+				}
+				imageRaster.setPixel(x, y, pixel);
+			}
+		}
 	}
 
 	@Override
@@ -141,6 +152,7 @@ public class CooccurrenceMatrix extends Feature {
 		double[] entropies = new double[matrices.length];
 		double[] inverseDifferenceMoments = new double[matrices.length];
 		double[] homogeineities = new double[matrices.length];
+		double[] correlations = new double[matrices.length];
 
 		for (int i = 0; i != matrices.length; i++) {
 			energies[i] = getEnergy(matrices[i]);
@@ -148,6 +160,7 @@ public class CooccurrenceMatrix extends Feature {
 			entropies[i] = getEntropy(matrices[i]);
 			inverseDifferenceMoments[i] = getInverseDifferenceMoment(matrices[i]);
 			homogeineities[i] = getHomogeneity(matrices[i]);
+			correlations[i] = getCorrelation(matrices[i]);
 		}
 
 		featuresAvgs[0] = getArrayAvg(energies);
@@ -155,6 +168,7 @@ public class CooccurrenceMatrix extends Feature {
 		featuresAvgs[2] = getArrayAvg(entropies);
 		featuresAvgs[3] = getArrayAvg(inverseDifferenceMoments);
 		featuresAvgs[4] = getArrayAvg(homogeineities);
+		featuresAvgs[5] = getArrayAvg(correlations);
 
 	}
 
@@ -202,9 +216,11 @@ public class CooccurrenceMatrix extends Feature {
 				 * We need to check that the value isn't zero because if it is,
 				 * Math.log() will return NaN
 				 */
-				if (m.getNormalisedMatrix()[i][j] != 0)
+				if (m.getNormalisedMatrix()[i][j] != 0) {
 					entropy += m.getNormalisedMatrix()[i][j]
 							* Math.log(m.getNormalisedMatrix()[i][j]);
+
+				}
 			}
 		}
 		entropy = -entropy;
@@ -232,12 +248,48 @@ public class CooccurrenceMatrix extends Feature {
 
 		for (int i = 0; i != numOfColours; i++) {
 			for (int j = 0; j != numOfColours; j++) {
-				homogeneity += (m.getNormalisedMatrix()[i][j]) / 1
-						+ Math.abs(i - j);
+				homogeneity += (m.getNormalisedMatrix()[i][j])
+						/ (1 + Math.abs(i - j));
 			}
 		}
 
 		return homogeneity;
+	}
+
+	private double getCorrelation(Matrix m) {
+		double correlation = 0;
+		double meanX = 0.0;
+		double meanY = 0.0;
+		double stdevX = 0.0;
+		double stdevY = 0.0;
+		
+		for (int x = 0; x != numOfColours; x++) {
+			for (int y = 0; y != numOfColours; y++) {
+				meanX += x * m.getNormalisedMatrix()[x][y];
+				meanY += y * m.getNormalisedMatrix()[x][y];
+
+			}
+		}
+
+		for (int x = 0; x != numOfColours; x++) {
+			for (int y = 0; y != numOfColours; y++) {
+				stdevX += Math.pow(x - meanX, 2) * m.getNormalisedMatrix()[x][y];
+				stdevY += Math.pow(y - meanY, 2) * m.getNormalisedMatrix()[x][y];
+			}
+		}
+		
+		stdevX = Math.sqrt(stdevX);
+		stdevY = Math.sqrt(stdevY);
+
+		for (int x = 0; x != numOfColours; x++) {
+			for (int y = 0; y != numOfColours; y++) {
+				correlation += (((x * y) * m.getNormalisedMatrix()[x][y]));
+			}
+		}
+		correlation -= (meanX*meanY);
+		correlation /= stdevX * stdevY;		
+		
+		return correlation;
 	}
 
 	public static double[] calculateDistance(CooccurrenceMatrix c1,
@@ -254,7 +306,7 @@ public class CooccurrenceMatrix extends Feature {
 
 	public static void normaliseLibraryDistances(List<LibraryImage> library) {
 		double max, min, dist;
-		double[][] textureDistances = new double[192][5];
+		double[][] textureDistances = new double[192][6];
 
 		for (int j = 0; j != library.get(0).getTextureVectorDistances().length; j++) {
 			max = library.get(0).getTextureVectorDistances()[j];
