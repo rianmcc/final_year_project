@@ -12,12 +12,15 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -46,17 +49,21 @@ public class MainGUI extends Application {
 		Image imageIcon = new Image("load_image_icon.png");
 
 		ImageView imgView = new ImageView(imageIcon);
-		imgView.setFitWidth(250);
+		imgView.setFitWidth(256);
 		imgView.setPreserveRatio(true);
-		grid.add(imgView, 0, 0, 4, 1);
 
+		HBox hbox = new HBox();
 		Button loadImageBtn = new Button("Load Query Image");
-		grid.add(loadImageBtn, 0, 1);
-		Button startButton = new Button("Run Algorithm");
-		grid.add(startButton, 1, 1);
+		Button startButton = new Button("Submit");
+	    hbox.setSpacing(10);
+	    hbox.setAlignment(Pos.CENTER);
+		hbox.getChildren().addAll(loadImageBtn, startButton);
 		
-		Scene scene = new Scene(grid, 400, 350);
-		stage.setTitle("Load An Image");
+		grid.add(imgView, 0, 0, 1, 1);
+		grid.add(hbox, 0, 1);
+		
+		Scene scene = new Scene(grid, 300, 350);
+		stage.setTitle("Image Search Engine");
 		stage.setScene(scene);
 		stage.show();
 
@@ -84,7 +91,11 @@ public class MainGUI extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				if (selectedQueryImage == null) {
-					System.out.println("No query selected");
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("No query image selected");
+					alert.setContentText("You must select a query image.");
+					alert.showAndWait();
 				} else {
 					retriever.submitQuery(selectedQueryImage);
 					
@@ -99,7 +110,6 @@ public class MainGUI extends Application {
 					int imageCol = 0;
 					int imageRow = 0;
 					Label distance;
-					// stackoverflow.com/questions/25374578/adding-images-to-a-gridpane-javafx
 					for (int i = 0; i != galleryImages.size(); i++) {
 						ImageView picture = new ImageView(galleryImages.get(i));
 						picture.setFitHeight(156);

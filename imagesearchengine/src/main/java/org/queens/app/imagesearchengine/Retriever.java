@@ -70,8 +70,8 @@ public class Retriever {
 		double finalDistance;
 		double colourHistW = 0d;
 		double shapeW = 0d;
-		double textureW = 1d;
-		double correlogramW = 0d;
+		double textureW = 0d;
+		double correlogramW = 1d;
 		for (GalleryImage img : gallery) {
 			finalDistance = 0;
 			

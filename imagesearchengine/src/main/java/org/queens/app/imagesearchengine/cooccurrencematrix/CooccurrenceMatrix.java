@@ -308,12 +308,12 @@ public class CooccurrenceMatrix extends Feature {
 		double max, min, dist;
 		double[][] textureDistances = new double[192][6];
 
-		for (int j = 0; j != gallery.get(0).getTextureVectorDistances().length; j++) {
-			max = gallery.get(0).getTextureVectorDistances()[j];
-			min = gallery.get(0).getTextureVectorDistances()[j];
+		for (int j = 0; j != gallery.get(0).getCoOccurrenceFeatureDistances().length; j++) {
+			max = gallery.get(0).getCoOccurrenceFeatureDistances()[j];
+			min = gallery.get(0).getCoOccurrenceFeatureDistances()[j];
 			dist = 0;
 			for (int i = 1; i != gallery.size(); i++) {
-				dist = gallery.get(i).getTextureVectorDistances()[j];
+				dist = gallery.get(i).getCoOccurrenceFeatureDistances()[j];
 				if (dist > max) {
 					max = dist;
 				}
@@ -323,7 +323,7 @@ public class CooccurrenceMatrix extends Feature {
 			}
 			for (int i = 0; i != gallery.size(); i++) {
 				textureDistances[i][j] = (gallery.get(i)
-						.getTextureVectorDistances()[j] - min) / (max - min);
+						.getCoOccurrenceFeatureDistances()[j] - min) / (max - min);
 			}
 		}
 

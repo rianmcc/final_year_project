@@ -10,12 +10,16 @@ import org.queens.app.imagesearchengine.edgehistogram.EdgeHistogram;
 
 public class GalleryImage implements Comparable<GalleryImage> {
 	private BufferedImage imageData;
-	private double distance;
-	private double colorDistance;
-	private double shapeDistance;
-	private double[] textureVectorDistances;
-	private double textureDistance;
+	
+	private double finalDistance;
+	
+	private double colorHistogramDistance;
+	private double edgeHistogramDistance;
+	private double coOccurrenceMatrixDistance;
 	private double colourCorrelogramDistance;
+	
+	private double[] coOccurrenceFeatureDistances;
+	
 	private ColourHistogram colourHistogram;
 	private EdgeHistogram edgeHistogram;
 	private CooccurrenceMatrix cooccurrenceMatrix;
@@ -45,29 +49,29 @@ public class GalleryImage implements Comparable<GalleryImage> {
 		this.imageData = imageData;
 	}
 	
-	public double[] getTextureVectorDistances() {
-		return textureVectorDistances;
+	public double[] getCoOccurrenceFeatureDistances() {
+		return coOccurrenceFeatureDistances;
 	}
 
 	public void setTextureVectorDistances(double[] textureVectorDistances) {
-		this.textureVectorDistances = textureVectorDistances;
+		this.coOccurrenceFeatureDistances = textureVectorDistances;
 	}
 
 	public double getTextureDistance() {
-		return textureDistance;
+		return coOccurrenceMatrixDistance;
 	}
 
 	public void setTextureDistance(double textureDistance) {
-		this.textureDistance = textureDistance;
+		this.coOccurrenceMatrixDistance = textureDistance;
 	}
 
 
 	public double getDistance() {
-		return distance;
+		return finalDistance;
 	}
 
 	public void setDistance(double distance) {
-		this.distance = distance;
+		this.finalDistance = distance;
 	}
 
 	public ColourHistogram getColourHistogram() {
@@ -95,19 +99,19 @@ public class GalleryImage implements Comparable<GalleryImage> {
 	}
 
 	public double getColorDistance() {
-		return colorDistance;
+		return colorHistogramDistance;
 	}
 
 	public void setColorDistance(double colorDistance) {
-		this.colorDistance = colorDistance;
+		this.colorHistogramDistance = colorDistance;
 	}
 
 	public double getShapeDistance() {
-		return shapeDistance;
+		return edgeHistogramDistance;
 	}
 
 	public void setShapeDistance(double shapeDistance) {
-		this.shapeDistance = shapeDistance;
+		this.edgeHistogramDistance = shapeDistance;
 	}
 	
 	public double getColourCorrelogramDistance() {
@@ -126,7 +130,7 @@ public class GalleryImage implements Comparable<GalleryImage> {
 	public int compareTo(GalleryImage o) {
 		double compareDistance = ((GalleryImage)o).getDistance();
 		
-		return Double.compare(distance, compareDistance);
+		return Double.compare(finalDistance, compareDistance);
 	}
 	
 	
